@@ -7,14 +7,15 @@ namespace Repository
     public class PostRepository : IPostRepository
     {
         private readonly DataContext _context;
+        
         public PostRepository(DataContext context)
         {
             _context = context;
         }
 
-        public ICollection<Comment> GetComments()
+        public ICollection<Comment> GetComments(int id)
         {
-            throw new NotImplementedException();
+            return _context.Comments.Where(p => p.PostId == id).ToList();
         }
 
         public Post GetPost(int id)

@@ -7,6 +7,6 @@ namespace ForumEngine.Interfaces
         Post GetPost(int id);
         Post GetPost(string title);
         User GetUser(int id);
-        ICollection<Comment> GetComments();
+        ICollection<Comment> GetComments(int id);
     }
 }

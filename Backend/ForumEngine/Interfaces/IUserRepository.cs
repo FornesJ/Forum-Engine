@@ -6,7 +6,7 @@ namespace ForumEngine.Interfaces
     {
         User GetUser(int id);
         User GetUser(string firstName, string lastName);
-        ICollection<Post> GetUserPosts();
-        ICollection<Comment> GetComments();
+        ICollection<Post> GetUserPosts(int id);
+        ICollection<Comment> GetComments(int id);
     }
 }

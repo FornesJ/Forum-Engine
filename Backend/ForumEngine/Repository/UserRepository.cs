@@ -13,9 +13,9 @@ namespace ForumEngine.Repository
             _context = context;
         }
 
-        public ICollection<Comment> GetComments()
+        public ICollection<Comment> GetComments(int id)
         {
-            throw new NotImplementedException();
+            return _context.Comments.Where(u => u.UserId == id).ToList();
         }
 
         public User GetUser(int id)
@@ -28,9 +28,9 @@ namespace ForumEngine.Repository
             return _context.Users.Where(u => u.FirstName == firstName && u.LastName == lastName).FirstOrDefault();
         }
 
-        public ICollection<Post> GetUserPosts()
+        public ICollection<Post> GetUserPosts(int id)
         {
-            throw new NotImplementedException();
+            return _context.Posts.Where(u => u.UserId == id).ToList();
         }
     }
 }
