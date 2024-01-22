@@ -1,6 +1,7 @@
 using ForumEngine.Data;
 using ForumEngine.Interfaces;
 using ForumEngine.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ForumEngine.Repository
 {
@@ -13,24 +14,31 @@ namespace ForumEngine.Repository
             _context = context;
         }
 
+        public async Task<User> CreateUser(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
         public ICollection<Comment> GetComments(int id)
         {
             return _context.Comments.Where(u => u.UserId == id).ToList();
         }
 
-        public User GetUser(int id)
-        {
-            return _context.Users.Where(u => u.Id == id).FirstOrDefault();
-        }
-
-        public User GetUser(string firstName, string lastName)
-        {
-            return _context.Users.Where(u => u.FirstName == firstName && u.LastName == lastName).FirstOrDefault();
-        }
-
         public ICollection<Post> GetUserPosts(int id)
         {
             return _context.Posts.Where(u => u.UserId == id).ToList();
+        }
+
+        public async Task<User?> GetUserById(int id)
+        {
+            return await _context.Users.FindAsync(id);
         }
     }
 }

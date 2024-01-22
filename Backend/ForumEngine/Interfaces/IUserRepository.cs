@@ -4,8 +4,9 @@ namespace ForumEngine.Interfaces
 {
     public interface IUserRepository
     {
-        User GetUser(int id);
-        User GetUser(string firstName, string lastName);
+        Task<User?> GetUserById(int id);
+        Task<List<User>> GetAllUsers();
+        Task<User> CreateUser(User user);
         ICollection<Post> GetUserPosts(int id);
         ICollection<Comment> GetComments(int id);
     }
