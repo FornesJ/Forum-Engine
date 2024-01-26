@@ -14,11 +14,10 @@ namespace ForumEngine.Repository
             _context = context;
         }
 
-        public async Task<User> CreateUser(User user)
+        public bool CreateUser(User user)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            return user;
+            _context.Users.Add(user);
+            return Save();
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -26,12 +25,12 @@ namespace ForumEngine.Repository
             return await _context.Users.ToListAsync();
         }
 
-        public ICollection<Comment> GetComments(int id)
+        public async Task<List<Comment>> GetUserComments(int id)
         {
             return _context.Comments.Where(u => u.UserId == id).ToList();
         }
 
-        public ICollection<Post> GetUserPosts(int id)
+        public async Task<List<Post>> GetUserPosts(int id)
         {
             return _context.Posts.Where(u => u.UserId == id).ToList();
         }
@@ -39,6 +38,12 @@ namespace ForumEngine.Repository
         public async Task<User?> GetUserById(int id)
         {
             return await _context.Users.FindAsync(id);
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
         }
     }
 }

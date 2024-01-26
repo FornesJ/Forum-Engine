@@ -1,3 +1,4 @@
+
 namespace ForumEngine.Models
 {
     public class User

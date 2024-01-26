@@ -20,6 +20,7 @@ namespace ForumEngine.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = _mapper.Map<List<UserDto>>(await _userRepository.GetAllUsers());
@@ -31,6 +32,8 @@ namespace ForumEngine.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> GetUsersById(int id)
         {
             var user = _mapper.Map<UserDto>(await _userRepository.GetUserById(id));
@@ -45,6 +48,8 @@ namespace ForumEngine.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> CreateUser([FromBody] UserDto userCreate)
         {
             if (userCreate == null)
@@ -65,7 +70,13 @@ namespace ForumEngine.Controllers
                 return BadRequest(ModelState);
 
             var userMap = _mapper.Map<User>(userCreate);
-            await _userRepository.CreateUser(userMap);
+            
+            if (!_userRepository.CreateUser(userMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while savin");
+                return StatusCode(500, ModelState);
+            }
+
             return Ok("Successfully created!");
         }
     }
