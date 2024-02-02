@@ -11,11 +11,15 @@ namespace ForumEngine.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPostRepository _postRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
         
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _postRepository = postRepository;
+            _commentRepository = commentRepository;
             _mapper = mapper;
         }
 
@@ -47,6 +51,32 @@ namespace ForumEngine.Controllers
             return Ok(user);
         }
 
+        /*
+        [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
+        public async Task<IActionResult> GetAllUserPosts(int id)
+        {
+            var posts = _mapper.Map<List<PostDto>>(await _userRepository.GetUserPosts(id));
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(posts);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Comment>))]
+        public async Task<IActionResult> GetAllUserComments(int id)
+        {
+            var comments = _mapper.Map<List<CommentDto>>(await _userRepository.GetUserComments(id));
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(comments);
+        }
+        */
+        
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
