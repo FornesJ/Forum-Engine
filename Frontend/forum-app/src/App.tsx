@@ -4,6 +4,7 @@ import { Home } from "./pages/Home";
 import { Posts } from "./pages/Posts";
 import { NavBar } from "./components/NavBar";
 import { About } from "./pages/About";
+import { Footer } from "./components/Footer";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/About" element={<About />} />
         </Routes>
       </Container>
+      <Footer />
     </>
   );
 }
