@@ -1,16 +1,18 @@
-import { Button } from "react-bootstrap";
-import { GetPosts } from "../api/api";
+import { Button, Container } from "react-bootstrap";
+import { useGetPosts } from "../api/api";
 import { Post } from "../components/Post";
 
 
 export function Posts() {
-    const tb = () => {
-        const posts = GetPosts();
-    }
+    const posts = useGetPosts();
     return (
         <>
-            <h1>Posts:</h1>
-            <Button onClick={tb}>click</Button>
+            <Container>
+                <h1>Posts</h1>
+                {posts.map(p =>
+                <Post key={p['id']} id={p['id']} title={p['title']} content={p['content']} userId={p['userId']} />
+                )}
+            </Container>
         </>
     );
 }

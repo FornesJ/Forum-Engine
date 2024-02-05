@@ -49,6 +49,18 @@ namespace ForumEngine.Controllers
             return Ok(post);
         }
 
+        [HttpGet("{postId}/Comments")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Comment>))]
+        public async Task<IActionResult> GetCommentsToPost(int postId)
+        {
+            var comments = _mapper.Map<List<CommentDto>>(_postRepository.GetComments(postId));
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(comments);
+        }
+
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]

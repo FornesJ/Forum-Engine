@@ -1,24 +1,44 @@
 import axios from "axios";
+import React from "react";
 import { useState } from "react";
 
-export const GetPosts = () => {
+export const useGetPosts = () => {
     const [posts, setPosts] = useState([]);
-    axios.get('http://localhost:8000/api/Post').then(res => {
-        setPosts(res.data);
-    }).catch(err => {
-        console.log(err)
-    })
+
+    React.useEffect(() => {
+        axios.get('http://localhost:8000/api/Post').then(res => {
+            setPosts(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+    }, []);
     return posts;
 }
 
-type GetPostProps = {
-    id: number
+export const useGetUser = (id: number) => {
+    const [user, setUser] = useState(Object);
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:8000/api/User/${id}`).then(res => {
+            setUser(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+    }, []);
+
+    return user;
 }
 
-export const GetPostById = ({id}: GetPostProps) => {
-    axios.get(`http://localhost:8000/api/Post/${id}`).then(res => {
-        console.log(res);
-    }).catch(err => {
-        console.log(err)
-    })
+export const useGetCommentToPost = (postId: number) => {
+    const [comment, setComment] = useState([]);
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:8000/api/Post/${postId}/Comments`).then(res => {
+            setComment(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+    }, []);
+
+    return comment;
 }
