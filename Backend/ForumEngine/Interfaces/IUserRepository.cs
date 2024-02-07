@@ -9,6 +9,8 @@ namespace ForumEngine.Interfaces
         bool CreateUser(User user);
         ICollection<Post> GetUserPosts(int id);
         ICollection<Comment> GetUserComments(int id);
+        bool UpdateUser(User user);
+        bool UserExists(int id);
         bool Save();
     }
 }

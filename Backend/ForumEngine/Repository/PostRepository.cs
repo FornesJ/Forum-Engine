@@ -37,10 +37,21 @@ namespace Repository
             return await _context.Posts.FindAsync(id);
         }
 
+        public bool PostExists(int id)
+        {
+            return _context.Posts.Any(p => p.Id == id);
+        }
+
         public bool Save()
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdatePost(Post post)
+        {
+            _context.Update(post);
+            return Save();
         }
     }
 }

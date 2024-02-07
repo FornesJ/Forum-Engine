@@ -83,5 +83,34 @@ namespace ForumEngine.Controllers
             }
             return Ok("Successfully created!");
         }
+
+        [HttpPut("{commentId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateComment(int commentId, [FromBody]CommentDto updatedComment)
+        {
+            if (updatedComment == null)
+                return BadRequest(ModelState);
+
+            if (commentId != updatedComment.Id)
+                return BadRequest(ModelState);
+
+            if (!_commentRepository.CommentExists(commentId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var commentMap = _mapper.Map<Comment>(updatedComment);
+
+            if (!_commentRepository.UpdateComment(commentMap))
+            {
+                ModelState.AddModelError("", "Something wnet wrong while updating comment!");
+                return StatusCode(500, ModelState); 
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -88,5 +88,34 @@ namespace ForumEngine.Controllers
             }
             return Ok("Successfully created!");
         }
+
+        [HttpPut("{postId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdatePost(int postId, [FromBody]PostDto updatedPost)
+        {
+            if (updatedPost == null)
+                return BadRequest(ModelState);
+
+            if (postId != updatedPost.Id)
+                return BadRequest(ModelState);
+
+            if (!_postRepository.PostExists(postId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var postMap = _mapper.Map<Post>(updatedPost);
+
+            if (!_postRepository.UpdatePost(postMap))
+            {
+                ModelState.AddModelError("", "Something wnet wrong while updating post!");
+                return StatusCode(500, ModelState); 
+            }
+
+            return NoContent();
+        }
     }
 }

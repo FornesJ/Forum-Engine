@@ -107,5 +107,34 @@ namespace ForumEngine.Controllers
 
             return Ok("Successfully created!");
         }
+
+        [HttpPut("{userId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody]UserDto updatedUser)
+        {
+            if (updatedUser == null)
+                return BadRequest(ModelState);
+
+            if (userId != updatedUser.Id)
+                return BadRequest(ModelState);
+
+            if (!_userRepository.UserExists(userId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var userMap = _mapper.Map<User>(updatedUser);
+
+            if (!_userRepository.UpdateUser(userMap))
+            {
+                ModelState.AddModelError("", "Something wnet wrong while updating user");
+                return StatusCode(500, ModelState); 
+            }
+
+            return NoContent();
+        }
     }
 }

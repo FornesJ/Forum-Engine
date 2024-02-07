@@ -13,6 +13,11 @@ namespace ForumEngine.Repository
             _context = context;
         }
 
+        public bool CommentExists(int id)
+        {
+            return _context.Comments.Any(c => c.Id == id);
+        }
+
         public bool CreateComment(Comment comment, Post post, User user)
         {
             comment.Post = post;
@@ -37,6 +42,12 @@ namespace ForumEngine.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdateComment(Comment comment)
+        {
+            _context.Update(comment);
+            return Save();
         }
     }
 }

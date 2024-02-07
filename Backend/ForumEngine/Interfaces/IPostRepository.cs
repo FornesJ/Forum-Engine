@@ -8,6 +8,8 @@ namespace ForumEngine.Interfaces
         Task<List<Post>> GetAllPosts();
         bool CreatePost(Post post, User user);
         ICollection<Comment> GetComments(int id);
+        bool UpdatePost(Post post);
+        bool PostExists(int id);
         bool Save();
     }
 }
