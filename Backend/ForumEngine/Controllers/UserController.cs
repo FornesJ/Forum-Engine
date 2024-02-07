@@ -51,12 +51,11 @@ namespace ForumEngine.Controllers
             return Ok(user);
         }
 
-        /*
-        [HttpGet("{id}")]
+        [HttpGet("{userId}/Posts")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
-        public async Task<IActionResult> GetAllUserPosts(int id)
+        public async Task<IActionResult> GetPostsByUser(int userId)
         {
-            var posts = _mapper.Map<List<PostDto>>(await _userRepository.GetUserPosts(id));
+            var posts = _mapper.Map<List<PostDto>>(_userRepository.GetUserPosts(userId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -64,18 +63,17 @@ namespace ForumEngine.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{userId}/Comments")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Comment>))]
-        public async Task<IActionResult> GetAllUserComments(int id)
+        public async Task<IActionResult> GetCommentsByUser(int userId)
         {
-            var comments = _mapper.Map<List<CommentDto>>(await _userRepository.GetUserComments(id));
+            var comments = _mapper.Map<List<CommentDto>>(_userRepository.GetUserComments(userId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return Ok(comments);
         }
-        */
         
         [HttpPost]
         [ProducesResponseType(204)]

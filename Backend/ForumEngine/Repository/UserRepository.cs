@@ -25,14 +25,14 @@ namespace ForumEngine.Repository
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<List<Comment>> GetUserComments(int id)
+        public ICollection<Comment> GetUserComments(int id)
         {
-            return _context.Comments.Where(u => u.UserId == id).ToList();
+            return _context.Comments.Where(c => c.UserId == id).ToList();
         }
 
-        public async Task<List<Post>> GetUserPosts(int id)
+        public ICollection<Post> GetUserPosts(int id)
         {
-            return _context.Posts.Where(u => u.UserId == id).ToList();
+            return _context.Posts.Where(p => p.UserId == id).ToList();
         }
 
         public async Task<User?> GetUserById(int id)

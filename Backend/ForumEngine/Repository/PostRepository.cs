@@ -37,11 +37,6 @@ namespace Repository
             return await _context.Posts.FindAsync(id);
         }
 
-        public User GetUser(int id)
-        {
-            return _context.Posts.Where(p => p.Id == id).Select(u => u.User).FirstOrDefault();
-        }
-
         public bool Save()
         {
             var saved = _context.SaveChanges();

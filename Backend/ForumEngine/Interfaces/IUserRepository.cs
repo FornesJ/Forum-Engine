@@ -7,8 +7,8 @@ namespace ForumEngine.Interfaces
         Task<User?> GetUserById(int id);
         Task<List<User>> GetAllUsers();
         bool CreateUser(User user);
-        Task<List<Post>> GetUserPosts(int id);
-        Task<List<Comment>> GetUserComments(int id);
+        ICollection<Post> GetUserPosts(int id);
+        ICollection<Comment> GetUserComments(int id);
         bool Save();
     }
 }

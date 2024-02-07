@@ -33,16 +33,6 @@ namespace ForumEngine.Repository
             return await _context.Comments.FindAsync(id);
         }
 
-        public Post GetPost(int id)
-        {
-            return _context.Comments.Where(c => c.Id == id).Select(p => p.Post).FirstOrDefault();
-        }
-
-        public User GetUser(int id)
-        {
-            return _context.Comments.Where(c => c.Id == id).Select(u => u.User).FirstOrDefault();
-        }
-
         public bool Save()
         {
             var saved = _context.SaveChanges();
