@@ -56,5 +56,11 @@ namespace ForumEngine.Repository
         {
             return _context.Users.Any(u => u.Id == id);
         }
+
+        public bool DeleteUser(User user)
+        {
+            _context.Remove(user);
+            return Save();
+        }
     }
 }

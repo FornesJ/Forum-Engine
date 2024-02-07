@@ -10,6 +10,8 @@ namespace ForumEngine.Interfaces
         ICollection<Comment> GetComments(int id);
         bool UpdatePost(Post post);
         bool PostExists(int id);
+        bool DeletePost(Post post);
+        bool DeletePosts(List<Post> posts);
         bool Save();
     }
 }

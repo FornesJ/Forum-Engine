@@ -112,5 +112,27 @@ namespace ForumEngine.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{commentId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteComment(int commentId)
+        {
+            if (!_commentRepository.CommentExists(commentId))
+                return NotFound();
+
+            var commentToDelete = await _commentRepository.GetCommentById(commentId);
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (!_commentRepository.DeleteComment(commentToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting comment!");
+            }
+
+            return NoContent();
+        }
     }
 }

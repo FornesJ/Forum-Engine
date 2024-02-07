@@ -12,12 +12,14 @@ namespace ForumEngine.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
 
-        public PostController(IPostRepository postRepository, IUserRepository userRepository, IMapper mapper)
+        public PostController(IPostRepository postRepository, IUserRepository userRepository, ICommentRepository commentRepository, IMapper mapper)
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
+            _commentRepository = commentRepository;
             _mapper = mapper;
         }
 
@@ -113,6 +115,34 @@ namespace ForumEngine.Controllers
             {
                 ModelState.AddModelError("", "Something wnet wrong while updating post!");
                 return StatusCode(500, ModelState); 
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{postId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeletePost(int postId)
+        {
+            if (!_postRepository.PostExists(postId))
+                return NotFound();
+
+            var postToDelete = await _postRepository.GetPostById(postId);
+            var commentsToDelete = _postRepository.GetComments(postId);
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (!_commentRepository.DeleteComments(commentsToDelete.ToList()))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting comments!");
+            }
+
+            if (!_postRepository.DeletePost(postToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting post!");
             }
 
             return NoContent();

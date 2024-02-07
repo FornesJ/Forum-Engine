@@ -28,6 +28,18 @@ namespace ForumEngine.Repository
             return Save();
         }
 
+        public bool DeleteComment(Comment comment)
+        {
+            _context.Remove(comment);
+            return Save();
+        }
+
+        public bool DeleteComments(List<Comment> comments)
+        {
+            _context.RemoveRange(comments);
+            return Save();
+        }
+
         public async Task<List<Comment>> GetAllComments()
         {
             return await _context.Comments.ToListAsync();

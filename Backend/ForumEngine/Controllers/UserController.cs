@@ -136,5 +136,52 @@ namespace ForumEngine.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{userId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            if (!_userRepository.UserExists(userId))
+                return NotFound();
+
+            var userToDelete = await _userRepository.GetUserById(userId);
+            var postsToDelete = _userRepository.GetUserPosts(userId);
+            var commentsToDelete = _userRepository.GetUserComments(userId);
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            foreach (Post post in postsToDelete)
+            {
+                var commentsInPostToDelete = _postRepository.GetComments(post.Id);
+
+                if (!ModelState.IsValid)
+                    return BadRequest();
+                
+                if (!_commentRepository.DeleteComments(commentsInPostToDelete.ToList()))
+                {
+                    ModelState.AddModelError("", "Something went wrong when deleting comments in post!");
+                }
+            }
+
+            if (!_commentRepository.DeleteComments(commentsToDelete.ToList()))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting comments!");
+            }
+
+            if (!_postRepository.DeletePosts(postsToDelete.ToList()))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting posts!");
+            }
+
+            if (!_userRepository.DeleteUser(userToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong when deleting user!");
+            }
+
+            return NoContent();
+        }
     }
 }

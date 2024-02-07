@@ -11,6 +11,7 @@ namespace ForumEngine.Interfaces
         ICollection<Comment> GetUserComments(int id);
         bool UpdateUser(User user);
         bool UserExists(int id);
+        bool DeleteUser(User user);
         bool Save();
     }
 }

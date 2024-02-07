@@ -9,6 +9,8 @@ namespace ForumEngine.Interfaces
         bool CreateComment(Comment comment, Post post, User user);
         bool UpdateComment(Comment comment);
         bool CommentExists(int id);
+        bool DeleteComment(Comment comment);
+        bool DeleteComments(List<Comment> comments);
         bool Save();
     }
 }

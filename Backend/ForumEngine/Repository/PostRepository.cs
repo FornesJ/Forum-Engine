@@ -22,6 +22,18 @@ namespace Repository
             return Save();
         }
 
+        public bool DeletePost(Post post)
+        {
+            _context.Remove(post);
+            return Save();
+        }
+
+        public bool DeletePosts(List<Post> posts)
+        {
+            _context.RemoveRange(posts);
+            return Save();
+        }
+
         public async Task<List<Post>> GetAllPosts()
         {
             return await _context.Posts.ToListAsync();
