@@ -55,7 +55,7 @@ namespace ForumEngine.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Comment>))]
         public async Task<IActionResult> GetCommentsToPost(int postId)
         {
-            var comments = _mapper.Map<List<CommentDto>>(_postRepository.GetComments(postId));
+            var comments = _mapper.Map<List<CommentDto>>(await _postRepository.GetComments(postId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -83,7 +83,7 @@ namespace ForumEngine.Controllers
 
             var postMap = _mapper.Map<Post>(postCreate);
 
-            if (!_postRepository.CreatePost(postMap, user))
+            if (await _postRepository.CreatePost(postMap, user) == null)
             {
                 ModelState.AddModelError("", "Something went wrong while savin");
                 return StatusCode(500, ModelState);
@@ -100,9 +100,6 @@ namespace ForumEngine.Controllers
             if (updatedPost == null)
                 return BadRequest(ModelState);
 
-            if (postId != updatedPost.Id)
-                return BadRequest(ModelState);
-
             if (!_postRepository.PostExists(postId))
                 return NotFound();
 
@@ -111,10 +108,10 @@ namespace ForumEngine.Controllers
 
             var postMap = _mapper.Map<Post>(updatedPost);
 
-            if (!_postRepository.UpdatePost(postMap))
+            if (await _postRepository.UpdatePost(postId, postMap) == null)
             {
                 ModelState.AddModelError("", "Something wnet wrong while updating post!");
-                return StatusCode(500, ModelState); 
+                return StatusCode(500, ModelState);
             }
 
             return NoContent();
@@ -130,17 +127,17 @@ namespace ForumEngine.Controllers
                 return NotFound();
 
             var postToDelete = await _postRepository.GetPostById(postId);
-            var commentsToDelete = _postRepository.GetComments(postId);
+            var commentsToDelete = await _postRepository.GetComments(postId);
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_commentRepository.DeleteComments(commentsToDelete.ToList()))
+            if (!_commentRepository.DeleteComments(commentsToDelete))
             {
                 ModelState.AddModelError("", "Something went wrong when deleting comments!");
             }
 
-            if (!_postRepository.DeletePost(postToDelete))
+            if (await _postRepository.DeletePost(postToDelete) == null)
             {
                 ModelState.AddModelError("", "Something went wrong when deleting post!");
             }

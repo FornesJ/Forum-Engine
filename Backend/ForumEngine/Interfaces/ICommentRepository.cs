@@ -4,12 +4,12 @@ namespace ForumEngine.Interfaces
 {
     public interface ICommentRepository
     {
-        Task<Comment> GetCommentById(int id);
+        Task<Comment?> GetCommentById(int id);
         Task<List<Comment>> GetAllComments();
-        bool CreateComment(Comment comment, Post post, User user);
-        bool UpdateComment(Comment comment);
+        Task<Comment> CreateComment(Comment comment, Post post, User user);
+        Task<Comment?> UpdateComment(int id, Comment comment);
         bool CommentExists(int id);
-        bool DeleteComment(Comment comment);
+        Task<Comment?> DeleteComment(Comment comment);
         bool DeleteComments(List<Comment> comments);
         bool Save();
     }

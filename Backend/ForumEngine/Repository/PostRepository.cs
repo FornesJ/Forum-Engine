@@ -14,18 +14,25 @@ namespace Repository
             _context = context;
         }
 
-        public bool CreatePost(Post post, User user)
+        public async Task<Post> CreatePost(Post post, User user)
         {
             post.User = user;
             post.UserId = user.Id;
-            _context.Posts.Add(post);
-            return Save();
+            await _context.Posts.AddAsync(post);
+            await _context.SaveChangesAsync();
+            return post;
         }
 
-        public bool DeletePost(Post post)
+        public async Task<Post> DeletePost(Post post)
         {
+            if (post == null)
+            {
+                return null;
+            }
+
             _context.Remove(post);
-            return Save();
+            await _context.SaveChangesAsync();
+            return post;
         }
 
         public bool DeletePosts(List<Post> posts)
@@ -39,12 +46,14 @@ namespace Repository
             return await _context.Posts.ToListAsync();
         }
 
-        public ICollection<Comment> GetComments(int id)
+        public async Task<List<Comment>> GetComments(int id)
         {
-            return _context.Comments.Where(p => p.PostId == id).ToList();
+            var comments = await _context.Comments.ToListAsync();
+            
+            return comments.Where(p => p.PostId == id).ToList();
         }
 
-        public async Task<Post> GetPostById(int id)
+        public async Task<Post?> GetPostById(int id)
         {
             return await _context.Posts.FindAsync(id);
         }
@@ -60,10 +69,21 @@ namespace Repository
             return saved > 0 ? true : false;
         }
 
-        public bool UpdatePost(Post post)
+        public async Task<Post?> UpdatePost(int id, Post post)
         {
-            _context.Update(post);
-            return Save();
+            var existingPost = await _context.Posts.FindAsync(id);
+
+            if (existingPost == null)
+            {
+                return null;
+            }
+            
+            existingPost.Title = post.Title;
+            existingPost.Content = post.Content;
+
+            await _context.SaveChangesAsync();
+
+            return existingPost;
         }
     }
 }

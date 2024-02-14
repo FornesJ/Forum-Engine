@@ -18,20 +18,27 @@ namespace ForumEngine.Repository
             return _context.Comments.Any(c => c.Id == id);
         }
 
-        public bool CreateComment(Comment comment, Post post, User user)
+        public async Task<Comment> CreateComment(Comment comment, Post post, User user)
         {
             comment.Post = post;
             comment.PostId = post.Id;
             comment.User = user;
             comment.UserId = user.Id;
-            _context.Comments.Add(comment);
-            return Save();
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
+            return comment;
         }
 
-        public bool DeleteComment(Comment comment)
+        public async Task<Comment?> DeleteComment(Comment comment)
         {
+            if (comment == null)
+            {
+                return null;
+            }
+
             _context.Remove(comment);
-            return Save();
+            await _context.SaveChangesAsync();
+            return comment;
         }
 
         public bool DeleteComments(List<Comment> comments)
@@ -45,7 +52,7 @@ namespace ForumEngine.Repository
             return await _context.Comments.ToListAsync();
         }
 
-        public async Task<Comment> GetCommentById(int id)
+        public async Task<Comment?> GetCommentById(int id)
         {
             return await _context.Comments.FindAsync(id);
         }
@@ -56,10 +63,21 @@ namespace ForumEngine.Repository
             return saved > 0 ? true : false;
         }
 
-        public bool UpdateComment(Comment comment)
+        public async Task<Comment?> UpdateComment(int id, Comment comment)
         {
-            _context.Update(comment);
-            return Save();
+            var existingComment = await _context.Comments.FindAsync(id);
+
+            if (existingComment == null)
+            {
+                return null;
+            }
+
+            existingComment.Title = comment.Title;
+            existingComment.Content = comment.Content;
+
+            await _context.SaveChangesAsync();
+
+            return existingComment;
         }
     }
 }

@@ -6,12 +6,12 @@ namespace ForumEngine.Interfaces
     {
         Task<User?> GetUserById(int id);
         Task<List<User>> GetAllUsers();
-        bool CreateUser(User user);
-        ICollection<Post> GetUserPosts(int id);
-        ICollection<Comment> GetUserComments(int id);
-        bool UpdateUser(User user);
+        Task<User> CreateUser(User user);
+        Task<List<Post>> GetUserPosts(int id);
+        Task<List<Comment>> GetUserComments(int id);
+        Task<User?> UpdateUser(int id, User user);
         bool UserExists(int id);
-        bool DeleteUser(User user);
+        Task<User?> DeleteUser(User user);
         bool Save();
     }
 }

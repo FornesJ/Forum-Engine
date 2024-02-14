@@ -76,7 +76,7 @@ namespace ForumEngine.Controllers
                 return BadRequest(ModelState);
 
             var commentMap = _mapper.Map<Comment>(commentCreate);
-            if (!_commentRepository.CreateComment(commentMap, post, user))
+            if (await _commentRepository.CreateComment(commentMap, post, user) == null)
             {
                 ModelState.AddModelError("", "Something went wrong while savin");
                 return StatusCode(500, ModelState);
@@ -88,23 +88,22 @@ namespace ForumEngine.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateComment(int commentId, [FromBody]CommentDto updatedComment)
+        public async Task<IActionResult> UpdateComment([FromRoute]int commentId, [FromBody]CommentDto updatedComment)
         {
             if (updatedComment == null)
-                return BadRequest(ModelState);
-
-            if (commentId != updatedComment.Id)
                 return BadRequest(ModelState);
 
             if (!_commentRepository.CommentExists(commentId))
                 return NotFound();
 
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(ModelState);
 
             var commentMap = _mapper.Map<Comment>(updatedComment);
 
-            if (!_commentRepository.UpdateComment(commentMap))
+            var comment = await _commentRepository.UpdateComment(commentId, commentMap);
+
+            if (comment == null)
             {
                 ModelState.AddModelError("", "Something wnet wrong while updating comment!");
                 return StatusCode(500, ModelState); 
@@ -127,7 +126,7 @@ namespace ForumEngine.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_commentRepository.DeleteComment(commentToDelete))
+            if (await _commentRepository.DeleteComment(commentToDelete) == null)
             {
                 ModelState.AddModelError("", "Something went wrong when deleting comment!");
             }

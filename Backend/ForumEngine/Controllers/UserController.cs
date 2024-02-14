@@ -55,7 +55,7 @@ namespace ForumEngine.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Post>))]
         public async Task<IActionResult> GetPostsByUser(int userId)
         {
-            var posts = _mapper.Map<List<PostDto>>(_userRepository.GetUserPosts(userId));
+            var posts = _mapper.Map<List<PostDto>>(await _userRepository.GetUserPosts(userId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -67,7 +67,7 @@ namespace ForumEngine.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Comment>))]
         public async Task<IActionResult> GetCommentsByUser(int userId)
         {
-            var comments = _mapper.Map<List<CommentDto>>(_userRepository.GetUserComments(userId));
+            var comments = _mapper.Map<List<CommentDto>>(await _userRepository.GetUserComments(userId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -99,7 +99,7 @@ namespace ForumEngine.Controllers
 
             var userMap = _mapper.Map<User>(userCreate);
             
-            if (!_userRepository.CreateUser(userMap))
+            if (await _userRepository.CreateUser(userMap) == null)
             {
                 ModelState.AddModelError("", "Something went wrong while savin");
                 return StatusCode(500, ModelState);
@@ -117,9 +117,6 @@ namespace ForumEngine.Controllers
             if (updatedUser == null)
                 return BadRequest(ModelState);
 
-            if (userId != updatedUser.Id)
-                return BadRequest(ModelState);
-
             if (!_userRepository.UserExists(userId))
                 return NotFound();
 
@@ -128,10 +125,10 @@ namespace ForumEngine.Controllers
 
             var userMap = _mapper.Map<User>(updatedUser);
 
-            if (!_userRepository.UpdateUser(userMap))
+            if (await _userRepository.UpdateUser(userId, userMap) == null)
             {
                 ModelState.AddModelError("", "Something wnet wrong while updating user");
-                return StatusCode(500, ModelState); 
+                return StatusCode(500, ModelState);
             }
 
             return NoContent();
@@ -147,20 +144,20 @@ namespace ForumEngine.Controllers
                 return NotFound();
 
             var userToDelete = await _userRepository.GetUserById(userId);
-            var postsToDelete = _userRepository.GetUserPosts(userId);
-            var commentsToDelete = _userRepository.GetUserComments(userId);
+            var postsToDelete = await _userRepository.GetUserPosts(userId);
+            var commentsToDelete = await _userRepository.GetUserComments(userId);
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
             foreach (Post post in postsToDelete)
             {
-                var commentsInPostToDelete = _postRepository.GetComments(post.Id);
+                var commentsInPostToDelete = await _postRepository.GetComments(post.Id);
 
                 if (!ModelState.IsValid)
                     return BadRequest();
                 
-                if (!_commentRepository.DeleteComments(commentsInPostToDelete.ToList()))
+                if (!_commentRepository.DeleteComments(commentsInPostToDelete))
                 {
                     ModelState.AddModelError("", "Something went wrong when deleting comments in post!");
                 }
@@ -176,7 +173,7 @@ namespace ForumEngine.Controllers
                 ModelState.AddModelError("", "Something went wrong when deleting posts!");
             }
 
-            if (!_userRepository.DeleteUser(userToDelete))
+            if (await _userRepository.DeleteUser(userToDelete) == null)
             {
                 ModelState.AddModelError("", "Something went wrong when deleting user!");
             }

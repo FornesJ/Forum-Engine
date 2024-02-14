@@ -14,10 +14,11 @@ namespace ForumEngine.Repository
             _context = context;
         }
 
-        public bool CreateUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            _context.Users.Add(user);
-            return Save();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -25,14 +26,16 @@ namespace ForumEngine.Repository
             return await _context.Users.ToListAsync();
         }
 
-        public ICollection<Comment> GetUserComments(int id)
+        public async Task<List<Comment>> GetUserComments(int id)
         {
-            return _context.Comments.Where(c => c.UserId == id).ToList();
+            var comments = await _context.Comments.ToListAsync();
+            return comments.Where(c => c.UserId == id).ToList();
         }
 
-        public ICollection<Post> GetUserPosts(int id)
+        public async Task<List<Post>> GetUserPosts(int id)
         {
-            return _context.Posts.Where(p => p.UserId == id).ToList();
+            var posts = await _context.Posts.ToListAsync();
+            return posts.Where(p => p.UserId == id).ToList();
         }
 
         public async Task<User?> GetUserById(int id)
@@ -46,10 +49,19 @@ namespace ForumEngine.Repository
             return saved > 0 ? true : false;
         }
 
-        public bool UpdateUser(User user)
+        public async Task<User?> UpdateUser(int id, User user)
         {
-            _context.Update(user);
-            return Save();
+            var existingUser = await _context.Users.FindAsync(id);
+
+            if (existingUser == null)
+            {
+                return null;
+            }
+
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            await _context.SaveChangesAsync();
+            return existingUser;
         }
 
         public bool UserExists(int id)
@@ -57,10 +69,16 @@ namespace ForumEngine.Repository
             return _context.Users.Any(u => u.Id == id);
         }
 
-        public bool DeleteUser(User user)
+        public async Task<User?> DeleteUser(User user)
         {
+            if (user == null)
+            {
+                return null;
+            }
+
             _context.Remove(user);
-            return Save();
+            await _context.SaveChangesAsync();
+            return user;
         }
     }
 }
